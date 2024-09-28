@@ -1,5 +1,6 @@
-package com.example.prepup;
+package com.example.prepup.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -7,6 +8,8 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.prepup.BuildConfig;
+import com.example.prepup.R;
 import com.example.prepup.model.Question;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -18,15 +21,16 @@ import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class CreateInterviewActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_create_interview);
 
         EditText interviewName = findViewById(R.id.interviewName);
         EditText companyName = findViewById(R.id.companyName);
@@ -116,34 +120,50 @@ public class MainActivity extends AppCompatActivity {
                 .replace("\t", "\\t");
     }
 
+    private void navigateToInterviewActivity(List<Question> questionList) {
+        Intent intent = new Intent(CreateInterviewActivity.this, InterviewActivity.class);
+        intent.putParcelableArrayListExtra("questions", new ArrayList<>(questionList));
+        startActivity(intent);
+    }
+
     private void parseJson(String json) {
         runOnUiThread(() -> {
             try {
                 Gson gson = new Gson();
 
-                // first, parse the root response as a JSON object
+                // Parse the root response as a JSON object
                 Type rootType = new TypeToken<Object>(){}.getType();
                 Map<String, Object> rootResponse = gson.fromJson(json, rootType);
 
-                // extract "choices" field, which contains the actual content
+                // Extract "choices" field, which contains the actual content
                 List<Map<String, Object>> choices = (List<Map<String, Object>>) rootResponse.get("choices");
                 if (choices != null && !choices.isEmpty()) {
-                    // get first choice and extract its "message" -> "content"
+                    // Get first choice and extract its "message" -> "content"
                     Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
                     String content = (String) message.get("content");
 
-                    // log raw content to see how it's structured
-                    Log.i("Generated Questions", content);
+                    // Log the raw content to see how it's structured
+                    Log.i("Generated Questions (Raw)", content);
 
-                    // parse content into a list
-                    Type questionListType = new TypeToken<List<Question>>(){}.getType();
-                    List<Question> questionList = gson.fromJson(content, questionListType);
+                    // Clean up the content by removing backticks and the "json" code block indicator
+                    content = content.replace("```json", "").replace("```", "").trim();
 
-                    // log for now, change later
-                    for (Question question : questionList) {
-                        Log.i("Question", "Number: " + question.getQuestionNumber() +
-                                ", Category: " + question.getCategory() +
-                                ", Question: " + question.getQuestionText());
+                    // Parse the cleaned content into a list of Question objects
+                    if (content.startsWith("[") && content.endsWith("]")) {
+                        Type questionListType = new TypeToken<List<Question>>(){}.getType();
+                        List<Question> questionList = gson.fromJson(content, questionListType);
+
+                        // Log for now, change later
+                        for (Question question : questionList) {
+                            Log.i("Question", "Number: " + question.getQuestionNumber() +
+                                    ", Category: " + question.getCategory() +
+                                    ", Question: " + question.getQuestionText());
+                        }
+
+                        // Navigate to InterviewActivity with questions
+                        navigateToInterviewActivity(questionList);
+                    } else {
+                        Log.e("JSON Parsing", "The content is not a valid JSON array");
                     }
                 }
             } catch (JsonSyntaxException | ClassCastException e) {
@@ -151,5 +171,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
+
 
 }
