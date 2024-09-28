@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/interviewName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Interview Name"/>
+
+        <EditText
+            android:id="@+id/companyName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Corporation/Company"/>
+
+        <EditText
+            android:id="@+id/positionName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Wanted Position"/>
+
+        <EditText
+            android:id="@+id/vacancyRequirements"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Vacancy Requirements"/>
+
+        <EditText
+            android:id="@+id/questionPreferences"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Questionnaire Preferences (optional)"/>
+
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"
+            android:layout_gravity="center_horizontal"/>
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
